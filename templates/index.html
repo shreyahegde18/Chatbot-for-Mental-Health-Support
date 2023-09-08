@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background-image: url('https://wallpapercave.com/dwp1x/wp10299384.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            text-align: center;
+            padding: 100px;
+        }
+        input[type="text"] {
+            padding: 10px;
+            width: 300px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #191a15;
+            color: #ece9e9;
+            border: none;
+            cursor: pointer;
+        }
+        h1 {
+            color: #f3f1f1;
+        }
+        footer {
+    background-color: #333; /* Background color for the footer */
+    color: #fff; /* Text color for the footer */
+    padding: 1px 0; /* Padding for top and bottom */
+    text-align: center; /* Center-align text */
+    position: absolute; /* Position the footer absolutely */
+    bottom: 0; /* Stick it to the bottom of the page */
+    width: 100%; /* Full width of the page */
+    /* border-top: 1px solid #ddd; Add a top border to separate it from the content */
+}
+    </style>
+    <script>
+        function storeNameAndRedirect() {
+            var username = document.getElementById("nameInput").value;
+            localStorage.removeItem("username");
+            localStorage.setItem("username", username);
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>You can Name me :)</h1>
+        <form action="/chat" method="get" onsubmit="storeNameAndRedirect()">
+            <input type="text" id="nameInput" name="name" placeholder="What name would you like to give me?">
+            <button type="submit">Chat</button>
+        </form>
+    </div>
+    <footer>
+        <p>&copy; 2023 Shreya Hegde. All rights reserved.</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Interface</title>
+    <style>
+        /* Custom styles for the chatbot interface */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .chat-container {
+            max-width: 500px;
+            margin: 20px auto;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        .chat-header {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+        .chat-box {
+            padding: 20px;
+            height: 300px;
+            overflow-y: scroll;
+        }
+        .user-message {
+            background-color: #e2f7fe;
+            color: #000;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            max-width: 70%;
+        }
+        .bot-message {
+            background-color: #d0f0c0;
+            color: #000;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            max-width: 70%;
+            align-self: flex-end;
+        }
+        .user-input {
+            display: flex;
+            margin-top: 10px;
+            padding: 10px;
+        }
+        #user-message {
+            flex-grow: 1;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            outline: none;
+        }
+        #send-button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+        .user-message-bubble {
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+        }
+        .bot-message-bubble {
+            display: flex;
+            justify-content: flex-end;
+            align-items: flex-start;
+        }
+        .message-bubble {
+            background-color: #e2f7fe;
+            color: #000;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            max-width: 70%;
+        }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .bot-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-left: 10px;
+        }
+        .user-name {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .bot-name {
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">Chatbot</div>
+        <div class="chat-box" id="chat-box">
+            <!-- Chat messages will be displayed here -->
+        </div>
+        <div class="user-input">
+            <input type="text" id="user-message" placeholder="Type your message...">
+            <button id="send-button">Send</button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("send-button").addEventListener("click", sendMessage);
+    
+        function sendMessage() {
+            var userMessage = document.getElementById("user-message").value;
+            document.getElementById("user-message").value = "";
+            var chatBox = document.getElementById("chat-box");
+    
+            // Display user message
+            var userMessageBubble = document.createElement("div");
+            userMessageBubble.classList.add("user-message-bubble");
+    
+            var userAvatar = document.createElement("img");
+            userAvatar.classList.add("user-avatar");
+            userAvatar.src = "user-avatar.jpg"; // Replace with the path to the user's profile picture
+    
+            var userName = document.createElement("div");
+            userName.classList.add("user-name");
+            userName.textContent = "User:";
+    
+            var userMessageElement = document.createElement("div");
+            userMessageElement.classList.add("message-bubble");
+            userMessageElement.textContent = userMessage;
+    
+            userMessageBubble.appendChild(userAvatar);
+            userMessageBubble.appendChild(userName);
+            userMessageBubble.appendChild(userMessageElement);
+            chatBox.appendChild(userMessageBubble);
+    
+            // Send user message to server and get bot response
+            fetch("/get_response", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: "user_message=" + encodeURIComponent(userMessage),
+            })
+            .then(response => response.json())
+            .then(data => {
+                var botResponse = data.bot_response;
+    
+                // Display bot response
+                var botMessageBubble = document.createElement("div");
+                botMessageBubble.classList.add("bot-message-bubble");
+    
+                var botAvatar = document.createElement("img");
+                botAvatar.classList.add("bot-avatar");
+                botAvatar.src = "bot-avatar.jpg"; // Replace with the path to the bot's profile picture
+    
+                var botName = document.createElement("div");
+                botName.classList.add("bot-name");
+                botName.textContent = "Chatbot:";
+    
+                var botMessageElement = document.createElement("div");
+                botMessageElement.classList.add("message-bubble");
+                botMessageElement.textContent = botResponse;
+    
+                botMessageBubble.appendChild(botAvatar);
+                botMessageBubble.appendChild(botMessageElement);
+                botMessageBubble.appendChild(botName);
+                chatBox.appendChild(botMessageBubble);
+    
+                // Scroll to the bottom of the chat box
+                chatBox.scrollTop = chatBox.scrollHeight;
+            })
+            .catch(error => {
+                console.error("Error sending message:", error);
+            });
+        }
+    </script>
+    
+</body>
+</html>

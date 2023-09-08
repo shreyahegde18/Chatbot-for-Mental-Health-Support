@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Interface</title>
+    <style>
+       /* Custom styles for the chatbot interface */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #fafafa; /* Instagram-like background color */
+    margin: 0;
+    padding: 0;
+}
+.chat-container {
+    max-width: 500px;
+    margin: 20px auto;
+    background-color: #fff; /* White chat background */
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+.chat-header {
+    background-color: #0099cc; /* Instagram-like header color */
+    color: #fff;
+    padding: 10px;
+    text-align: center;
+    font-size: 1.2rem;
+}
+.chat-box {
+    padding: 20px;
+    height: 300px;
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column; /* Reverse the order of messages to display the latest at the bottom */
+}
+.user-message {
+    background-color: #eef3f6; /* Light gray user message background */
+    color: #000;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    max-width: 70%;
+    align-self: flex-end; /* Left-align user messages */
+}
+.bot-message {
+    background-color: #0099cc; /* Instagram-like blue bot message background */
+    color: #fff;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    max-width: 70%;
+    align-self: flex-start; /* Right-align bot messages */
+}
+.user-input {
+    display: flex;
+    margin-top: 10px;
+    padding: 10px;
+}
+#user-message {
+    flex-grow: 1;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+}
+#send-button {
+    background-color: #0099cc; /* Instagram-like blue send button */
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    margin-left: 10px;
+    cursor: pointer;
+}
+footer {
+    background-color: #333; /* Background color for the footer */
+    color: #fff; /* Text color for the footer */
+    padding: 1px 0; /* Padding for top and bottom */
+    text-align: center; /* Center-align text */
+    position: absolute; /* Position the footer absolutely */
+    bottom: 0; /* Stick it to the bottom of the page */
+    width: 100%; /* Full width of the page */
+    /* border-top: 1px solid #ddd; Add a top border to separate it from the content */
+}
+
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">Mental Health Support Chatbot</div>
+        <div class="chat-box" id="chat-box">
+            <!-- Chat messages will be displayed here -->
+        </div>
+        <div class="user-input">
+            <input type="text" id="user-message" placeholder="Type your message..." onkeydown="if (event.keyCode === 13) document.getElementById('send-button').click()">
+            <button id="send-button">Send</button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("send-button").addEventListener("click", sendMessage);
+    
+        function sendMessage() {
+            var userMessage = document.getElementById("user-message").value;
+            document.getElementById("user-message").value = "";
+            var chatBox = document.getElementById("chat-box");
+            // Retrieve the stored username from local storage
+            var username = localStorage.getItem("username") || "Bot"; // Default to "You" if not found
+    
+            // Display user message
+            var userMessageElement = document.createElement("div");
+            userMessageElement.classList.add("user-message");
+            userMessageElement.textContent = "You: "+ userMessage;
+            chatBox.appendChild(userMessageElement);
+    
+            // Send user message to server and get bot response
+            fetch("/get_response", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: "user_message=" + encodeURIComponent(userMessage),
+            })
+            .then(response => response.json())
+            .then(data => {
+                var botResponse = username + ": " +data.bot_response;
+    
+                // Display bot response
+                var botMessageElement = document.createElement("div");
+                botMessageElement.classList.add("bot-message");
+                botMessageElement.textContent = botResponse;
+                chatBox.appendChild(botMessageElement);
+    
+                // Scroll to the bottom of the chat box
+                chatBox.scrollTop = chatBox.scrollHeight;
+            })
+            .catch(error => {
+                console.error("Error sending message:", error);
+            });
+        }
+    </script>
+    <footer>
+        <p>&copy; 2023 Shreya Hegde. All rights reserved.</p>
+    </footer>
+    
+</body>
+</html>
